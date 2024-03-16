@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_db_subnet_group" "rdssubnet" {
   name       = "rdssubnet"
-  subnet_ids = ["subnet-07f6357a47a7bab23", "subnet-00c269ae8f0e56f80", "subnet-050a66c2d1035fd67", "subnet-0591ff8243d99c9a8", "subnet-0506f725026e430fc", "subnet-08923de2d5e058b7c", "subnet-07de2318b77347bc7"]
+  subnet_ids = ["subnet-07f6357a47a7bab23", "subnet-0591ff8243d99c9a8"]
   tags = {
     Name = "rdssubnet"
   }

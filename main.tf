@@ -37,7 +37,7 @@ provider "postgresql" {
   expected_version = aws_db_instance.rds-sevenfood.engine_version
 }
 
-# Referenciar a VPC existente e os subnets
+# Referenciar a VPC existente
 data "aws_vpc" "existing_vpc" {
   id = "vpc-e7de3280"
 }
@@ -48,35 +48,16 @@ data "aws_subnet" "subnet_1" {
 }
 
 data "aws_subnet" "subnet_2" {
-  id = "subnet-5e7f3028" # Substitua pelo ID do seu segundo subnet existente
+  id = "subnet-5e7f3028"
 }
 
-resource "aws_security_group" "rdssecurity" {
-  name        = "rdssecuritygroup"
-  description = "Example security group for RDS"
-  vpc_id      = "vpc-e7de3280"
-
-  ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "rdssecurity"
-  }
+data "aws_security_group" "existing_sg" {
+  id = "sg-xxxxxxxx" # Substitua pelo ID do seu Security Group existente
 }
+
 resource "aws_db_subnet_group" "rdssubnet" {
   name       = "rdssubnet"
-  subnet_ids = data.aws_subnet_ids.existing_subnets.ids
+  subnet_ids = [data.aws_subnet.subnet_1.id, data.aws_subnet.subnet_2.id]
   tags = {
     Name = "rdssubnet"
   }

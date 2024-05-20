@@ -42,27 +42,26 @@ data "aws_vpc" "existing_vpc" {
   id = "vpc-e7de3280"
 }
 
-# Referenciar subnets existentes
+# Referenciar subnets existentes em diferentes AZs
 data "aws_subnet" "subnet_1" {
-  id = "subnet-c2cc50e8"
+  id = "subnet-c2cc50e8" # Subnet em uma AZ (por exemplo, us-east-1a)
 }
 
 data "aws_subnet" "subnet_2" {
-  id = "subnet-5e7f3028"
+  id = "subnet-5e7f3028" # Subnet em outra AZ (por exemplo, us-east-1b)
 }
 
-# Referenciar o Security Group existente pelo ID correto
 data "aws_security_group" "existing_sg" {
-  id = "sg-0690dca1aa7a74b8d" # Substitua pelo ID correto do seu Security Group existente
+  id = "sg-xxxxxxxx" # Substitua pelo ID correto do seu Security Group existente
 }
 
-#resource "aws_db_subnet_group" "rdssubnet" {
-#  name       = "rdssubnet"
-#  subnet_ids = [data.aws_subnet.subnet_1.id, data.aws_subnet.subnet_2.id]
-#  tags = {
-#    Name = "rdssubnet"
-#  }
-#}
+resource "aws_db_subnet_group" "rdssubnet" {
+  name       = "rdssubnet"
+  subnet_ids = [data.aws_subnet.subnet_1.id, data.aws_subnet.subnet_2.id] # Incluindo subnets em diferentes AZs
+  tags = {
+    Name = "rdssubnet"
+  }
+}
 
 resource "aws_db_instance" "rds-sevenfood" {
   allocated_storage    = 20
@@ -73,7 +72,7 @@ resource "aws_db_instance" "rds-sevenfood" {
   identifier           = local.postgres_identifier
   username             = local.postgres_db_username
   password             = local.postgres_user_password
-  db_subnet_group_name = "rdssubnet" # Referenciar o grupo de sub-rede existente
+  db_subnet_group_name = aws_db_subnet_group.rdssubnet.name
   vpc_security_group_ids = [data.aws_security_group.existing_sg.id]
   skip_final_snapshot  = true
   publicly_accessible  = true

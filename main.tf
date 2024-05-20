@@ -42,8 +42,13 @@ data "aws_vpc" "existing_vpc" {
   id = "vpc-e7de3280"
 }
 
-data "aws_subnet_ids" "existing_subnets" {
-  vpc_id = data.aws_vpc.existing_vpc.id
+# Referenciar subnets existentes
+data "aws_subnet" "subnet_1" {
+  id = "subnet-c2cc50e8"
+}
+
+data "aws_subnet" "subnet_2" {
+  id = "subnet-5e7f3028" # Substitua pelo ID do seu segundo subnet existente
 }
 
 resource "aws_security_group" "rdssecurity" {

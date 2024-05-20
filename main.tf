@@ -56,13 +56,13 @@ data "aws_security_group" "existing_sg" {
   id = "sg-0690dca1aa7a74b8d" # Substitua pelo ID correto do seu Security Group existente
 }
 
-resource "aws_db_subnet_group" "rdssubnet" {
-  name       = "rdssubnet"
-  subnet_ids = [data.aws_subnet.subnet_1.id, data.aws_subnet.subnet_2.id]
-  tags = {
-    Name = "rdssubnet"
-  }
-}
+#resource "aws_db_subnet_group" "rdssubnet" {
+#  name       = "rdssubnet"
+#  subnet_ids = [data.aws_subnet.subnet_1.id, data.aws_subnet.subnet_2.id]
+#  tags = {
+#    Name = "rdssubnet"
+#  }
+#}
 
 resource "aws_db_instance" "rds-sevenfood" {
   allocated_storage    = 20
@@ -73,7 +73,7 @@ resource "aws_db_instance" "rds-sevenfood" {
   identifier           = local.postgres_identifier
   username             = local.postgres_db_username
   password             = local.postgres_user_password
-  db_subnet_group_name = aws_db_subnet_group.rdssubnet.name
+  db_subnet_group_name = "rdssubnet" # Referenciar o grupo de sub-rede existente
   vpc_security_group_ids = [data.aws_security_group.existing_sg.id]
   skip_final_snapshot  = true
   publicly_accessible  = true

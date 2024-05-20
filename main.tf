@@ -1,5 +1,4 @@
 locals {
-
   postgres_identifier    = "rds-sevenfood"
   postgres_database      = "sevenfood"
   postgres_owner         = "postgres"
@@ -10,17 +9,18 @@ locals {
   postgres_instance_name = "rds-sevenfood"
   postgres_db_password   = "Postgres2019!"
   postgres_port          = "5432"
-
 }
+
 terraform {
   required_version = ">= 1.1.6"
   required_providers {
-    postgresql = { # This line is what needs to change.
-      source = "cyrilgdn/postgresql"
+    postgresql = {
+      source  = "cyrilgdn/postgresql"
       version = "1.22.0"
     }
   }
 }
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -29,25 +29,27 @@ provider "postgresql" {
   host            = aws_db_instance.rds-sevenfood.address
   port            = local.postgres_port
   database        = local.postgres_name
-  username        = local.postgres_db_username 
-  password        = local.postgres_user_password 
+  username        = local.postgres_db_username
+  password        = local.postgres_user_password
   sslmode         = "require"
   connect_timeout = 15
   superuser       = false
   expected_version = aws_db_instance.rds-sevenfood.engine_version
 }
-resource "aws_db_subnet_group" "rdssubnet" {
-  name       = "rdssubnet"
-  subnet_ids = ["subnet-0b60b0e5aea9d5115", "subnet-0594787ac2c9afea2"]
-  tags = {
-    Name = "rdssubnet"
-  }
+
+# Referenciar a VPC existente e os subnets
+data "aws_vpc" "existing_vpc" {
+  id = "vpc-e7de3280"
+}
+
+data "aws_subnet_ids" "existing_subnets" {
+  vpc_id = data.aws_vpc.existing_vpc.id
 }
 
 resource "aws_security_group" "rdssecurity" {
   name        = "rdssecuritygroup"
   description = "Example security group for RDS"
-  vpc_id      = "vpc-064bfafaff1481aef"
+  vpc_id      = "vpc-e7de3280"
 
   ingress {
     from_port   = 5432
@@ -67,6 +69,13 @@ resource "aws_security_group" "rdssecurity" {
     Name = "rdssecurity"
   }
 }
+resource "aws_db_subnet_group" "rdssubnet" {
+  name       = "rdssubnet"
+  subnet_ids = data.aws_subnet_ids.existing_subnets.ids
+  tags = {
+    Name = "rdssubnet"
+  }
+}
 
 resource "aws_db_instance" "rds-sevenfood" {
   allocated_storage    = 20
@@ -78,7 +87,7 @@ resource "aws_db_instance" "rds-sevenfood" {
   username             = local.postgres_db_username
   password             = local.postgres_user_password
   db_subnet_group_name = aws_db_subnet_group.rdssubnet.name
-  vpc_security_group_ids = [aws_security_group.rdssecurity.id]
+  vpc_security_group_ids = [data.aws_security_group.existing_sg.id]
   skip_final_snapshot  = true
   publicly_accessible  = true
   tags = {

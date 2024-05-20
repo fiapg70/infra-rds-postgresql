@@ -51,8 +51,9 @@ data "aws_subnet" "subnet_2" {
   id = "subnet-5e7f3028"
 }
 
+# Referenciar o Security Group existente pelo ID correto
 data "aws_security_group" "existing_sg" {
-  id = "rdssecuritygroupSG" # Substitua pelo ID do seu Security Group existente
+  id = "sg-0690dca1aa7a74b8d" # Substitua pelo ID correto do seu Security Group existente
 }
 
 resource "aws_db_subnet_group" "rdssubnet" {

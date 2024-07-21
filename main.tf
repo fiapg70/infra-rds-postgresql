@@ -53,6 +53,10 @@ data "aws_db_subnet_group" "existing_subnet_group" {
   name = "rdssubnet"
 }
 
+data "aws_security_group" "existing_sg" {
+  id = "sg-0671b394cda809751"
+}
+
 resource "aws_security_group" "postgres_sg" {
   name        = "postgres_sg"
   description = "Security group for PostgreSQL RDS instance"
@@ -77,12 +81,8 @@ resource "aws_security_group" "postgres_sg" {
   }
 }
 
-resource "aws_internet_gateway" "igw" {
+data "aws_internet_gateway" "existing_igw" {
   vpc_id = data.aws_vpc.existing_vpc.id
-
-  tags = {
-    Name = "main-internet-gateway"
-  }
 }
 
 data "aws_route_table" "main_route_table" {
@@ -92,7 +92,7 @@ data "aws_route_table" "main_route_table" {
 resource "aws_route" "igw_route" {
   route_table_id         = data.aws_route_table.main_route_table.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.igw.id
+  gateway_id             = data.aws_internet_gateway.existing_igw.id
 }
 
 resource "aws_db_instance" "rds-sevenfood" {

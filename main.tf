@@ -77,6 +77,24 @@ resource "aws_security_group" "postgres_sg" {
   }
 }
 
+resource "aws_internet_gateway" "igw" {
+  vpc_id = data.aws_vpc.existing_vpc.id
+
+  tags = {
+    Name = "main-internet-gateway"
+  }
+}
+
+data "aws_route_table" "main_route_table" {
+  vpc_id = data.aws_vpc.existing_vpc.id
+}
+
+resource "aws_route" "igw_route" {
+  route_table_id         = data.aws_route_table.main_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw.id
+}
+
 resource "aws_db_instance" "rds-sevenfood" {
   allocated_storage    = 20
   storage_type         = "gp2"

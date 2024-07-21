@@ -53,9 +53,9 @@ data "aws_db_subnet_group" "existing_subnet_group" {
   name = "rdssubnet"
 }
 
-data "aws_security_group" "existing_sg" {
-  id = "sg-0671b394cda809751"
-}
+#data "aws_security_group" "existing_sg" {
+#  id = "sg-0671b394cda809751"
+#}
 
 resource "aws_security_group" "postgres_sg" {
   name        = "postgres_sg"

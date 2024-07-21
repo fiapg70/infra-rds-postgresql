@@ -38,15 +38,15 @@ provider "postgresql" {
 }
 
 data "aws_vpc" "existing_vpc" {
-  id = "vpc-e7de3280"
+  id = "vpc-e7de32xx"
 }
 
 data "aws_subnet" "subnet_1" {
-  id = "subnet-c2cc50e8"
+  id = "subnet-c2cc50xx"
 }
 
 data "aws_subnet" "subnet_2" {
-  id = "subnet-5e7f3028"
+  id = "subnet-5e7f30xx"
 }
 
 data "aws_db_subnet_group" "existing_subnet_group" {
@@ -54,7 +54,7 @@ data "aws_db_subnet_group" "existing_subnet_group" {
 }
 
 #data "aws_security_group" "existing_sg" {
-#  id = "sg-0671b394cda809751"
+#  id = "sg-0671b394cda8097ss"
 #}
 
 resource "aws_security_group" "postgres_sg" {

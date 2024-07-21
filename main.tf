@@ -82,7 +82,10 @@ resource "aws_security_group" "postgres_sg" {
 }
 
 data "aws_internet_gateway" "existing_igw" {
-  vpc_id = data.aws_vpc.existing_vpc.id
+  filter {
+    name   = "attachment.vpc-id"
+    values = [data.aws_vpc.existing_vpc.id]
+  }
 }
 
 data "aws_route_table" "main_route_table" {

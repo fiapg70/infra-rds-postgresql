@@ -37,26 +37,44 @@ provider "postgresql" {
   expected_version = aws_db_instance.rds-sevenfood.engine_version
 }
 
-# Referenciar a VPC existente
 data "aws_vpc" "existing_vpc" {
   id = "vpc-e7de3280"
 }
 
-# Referenciar subnets existentes em diferentes AZs
 data "aws_subnet" "subnet_1" {
-  id = "subnet-c2cc50e8" # Subnet em uma AZ (por exemplo, us-east-1a)
+  id = "subnet-c2cc50e8"
 }
 
 data "aws_subnet" "subnet_2" {
-  id = "subnet-5e7f3028" # Subnet em outra AZ (por exemplo, us-east-1b)
-}
-
-data "aws_security_group" "existing_sg" {
-  id = "sg-0671b394cda809751" # Substitua pelo ID correto do seu Security Group existente
+  id = "subnet-5e7f3028"
 }
 
 data "aws_db_subnet_group" "existing_subnet_group" {
-  name = "rdssubnet" # Nome do grupo de sub-rede existente
+  name = "rdssubnet"
+}
+
+resource "aws_security_group" "postgres_sg" {
+  name        = "postgres_sg"
+  description = "Security group for PostgreSQL RDS instance"
+  vpc_id      = data.aws_vpc.existing_vpc.id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Ajuste conforme necessário para segurança
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "postgres_sg"
+  }
 }
 
 resource "aws_db_instance" "rds-sevenfood" {
@@ -69,7 +87,7 @@ resource "aws_db_instance" "rds-sevenfood" {
   username             = local.postgres_db_username
   password             = local.postgres_user_password
   db_subnet_group_name = data.aws_db_subnet_group.existing_subnet_group.name
-  vpc_security_group_ids = [data.aws_security_group.existing_sg.id]
+  vpc_security_group_ids = [aws_security_group.postgres_sg.id]
   skip_final_snapshot  = true
   publicly_accessible  = true
   tags = {
@@ -81,7 +99,7 @@ resource "postgresql_database" "sevenfood-database" {
   name              = local.postgres_database
   owner             = local.postgres_owner
   lc_collate        = "en_US.UTF-8"
-  connection_limit  = -1 # sem limite. Ajuste conforme necessário
+  connection_limit  = -1
   allow_connections = true
-  template          = "template0" # ou "template1", dependendo da sua necessidade
+  template          = "template0"
 }

@@ -53,5 +53,5 @@ variable "rds_security_group_name" {
 
 variable "ec2_security_group_id" {
   description = "The ID of the EC2 security group that can access the RDS instance"
-  default     = "sg-0e9e4d688a03ec79a"
+  default     = "sg-0fd0983b50b4cf216"
 }

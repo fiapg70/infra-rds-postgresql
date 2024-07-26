@@ -1,10 +1,12 @@
 variable "vpc_id" {
   description = "The ID of the VPC where the RDS will be deployed"
+  default     = "10.0.0.0/16"
 }
 
 variable "rds_subnet_ids" {
   description = "The IDs of the subnets for the RDS subnet group"
   type        = list(string)
+  default     = ["subnet-05ff19c24395444ba", "subnet-0febb4e9413d1c23a"]
 }
 
 variable "db_identifier" {
@@ -39,7 +41,9 @@ variable "db_username" {
 
 variable "db_password" {
   description = "The master password for the RDS instance"
+  type        = string
   sensitive   = true
+  default     = "Postgres2019!"
 }
 
 variable "rds_security_group_name" {

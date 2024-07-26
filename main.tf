@@ -1,14 +1,59 @@
-# Security Group para RDS
-resource "aws_security_group" "rds_sg" {
-  name   = var.rds_security_group_name
-  vpc_id = var.vpc_id
+locals {
+
+  postgres_identifier    = "rds-healthmed"
+  postgres_database      = "healthmeddb"
+  postgres_owner         = "postgres"
+  postgres_name          = "postgres"
+  postgres_db_username   = "postgres"
+  postgres_user_name     = "sevenuser"
+  postgres_user_password = "Postgres2019!"
+  postgres_instance_name = "rds-healthmed"
+  postgres_db_password   = "Postgres2019!"
+  postgres_port          = "5432"
+
+}
+terraform {
+  required_version = ">= 1.1.6"
+  required_providers {
+    postgresql = { # This line is what needs to change.
+      source = "cyrilgdn/postgresql"
+      version = "1.22.0"
+    }
+  }
+}
+provider "aws" {
+  region = "us-east-1"
+}
+
+provider "postgresql" {
+  host            = aws_db_instance.rds-healthmed.address
+  port            = local.postgres_port
+  database        = local.postgres_name
+  username        = local.postgres_db_username 
+  password        = local.postgres_user_password 
+  sslmode         = "require"
+  connect_timeout = 15
+  superuser       = false
+  expected_version = aws_db_instance.rds-healthmed.engine_version
+}
+resource "aws_db_subnet_group" "rdssubnet" {
+  name       = "rdssubnet"
+  subnet_ids = ["subnet-03ef2390558a998a9", "subnet-018e6bd3ea3115b87"]
+  tags = {
+    Name = "rdssubnet"
+  }
+}
+
+resource "aws_security_group" "rdssecurity" {
+  name        = "rdssecuritygroup"
+  description = "Example security group for RDS"
+  vpc_id      = "vpc-04308bc5185e0f872"
 
   ingress {
-    description     = "PostgreSQL"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [var.ec2_security_group_id]
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -19,33 +64,33 @@ resource "aws_security_group" "rds_sg" {
   }
 
   tags = {
-    Name = var.rds_security_group_name
+    Name = "rdssecurity"
   }
 }
 
-# Subnet Group para RDS
-resource "aws_db_subnet_group" "main" {
-  name       = "main"
-  subnet_ids = var.rds_subnet_ids
-
+resource "aws_db_instance" "rds-healthmed" {
+  allocated_storage    = 20
+  storage_type         = "gp2"
+  engine               = "postgres"
+  engine_version       = "16.1"
+  instance_class       = "db.r6g.large"
+  identifier           = local.postgres_identifier
+  username             = local.postgres_db_username
+  password             = local.postgres_user_password
+  db_subnet_group_name = aws_db_subnet_group.rdssubnet.name
+  vpc_security_group_ids = [aws_security_group.rdssecurity.id]
+  skip_final_snapshot  = true
+  publicly_accessible  = true
   tags = {
-    Name = "Main DB subnet group"
+    Name = "rds-healthmed"
   }
 }
 
-# Banco de Dados RDS Postgres
-resource "aws_db_instance" "default" {
-  identifier              = var.db_identifier
-  engine                  = var.db_engine
-  instance_class          = var.db_instance_class
-  allocated_storage       = var.db_allocated_storage
-  db_name                 = var.db_name
-  username                = var.db_username
-  password                = var.db_password
-  vpc_security_group_ids  = [aws_security_group.rds_sg.id]
-  db_subnet_group_name    = aws_db_subnet_group.main.name
-
-  tags = {
-    Name = "PostgresDB"
-  }
+resource "postgresql_database" "healthmed-database" {
+  name              = local.postgres_database
+  owner             = local.postgres_owner
+  lc_collate        = "en_US.UTF-8"
+  connection_limit  = -1 # sem limite. Ajuste conforme necessário
+  allow_connections = true
+  template          = "template0" # ou "template1", dependendo da sua necessidade
 }

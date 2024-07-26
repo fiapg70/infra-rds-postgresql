@@ -1,6 +1,6 @@
 variable "vpc_id" {
   description = "The ID of the VPC where the RDS will be deployed"
-  default     = "10.0.0.0/16"
+  default     = "vpc-0072a7ae968006755"
 }
 
 variable "rds_subnet_ids" {
@@ -48,10 +48,10 @@ variable "db_password" {
 
 variable "rds_security_group_name" {
   description = "The name of the security group for the RDS instance"
-  default     = "postgres_sg"
+  default     = "postgres_sg_new_vpc"
 }
 
 variable "ec2_security_group_id" {
   description = "The ID of the EC2 security group that can access the RDS instance"
-  default     = "sg-0706fe79f9de77ec0"
+  default     = "sg-0e9e4d688a03ec79a"
 }

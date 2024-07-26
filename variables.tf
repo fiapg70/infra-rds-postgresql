@@ -6,7 +6,7 @@ variable "vpc_id" {
 variable "rds_subnet_ids" {
   description = "The IDs of the subnets for the RDS subnet group"
   type        = list(string)
-  default     = ["subnet-047560a0168c996d4", "subnet-0a873bee4a0e5ddc5", "subnet-03ef2390558a998a9", "subnet-018e6bd3ea3115b87"]
+  default     = ["subnet-03ef2390558a998a9", "subnet-047560a0168c996d4", "subnet-047560a0168c996d4", "subnet-0a873bee4a0e5ddc5"]
 }
 
 variable "db_identifier" {

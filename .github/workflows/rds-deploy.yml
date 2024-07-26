@@ -1,9 +1,10 @@
-name: Deploy RDS
+name: Deploy and Destroy RDS
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   terraform:
@@ -32,4 +33,9 @@ jobs:
         run: terraform plan
 
       - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve
+
+      - name: Terraform Destroy
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
+        run: terraform destroy -auto-approve

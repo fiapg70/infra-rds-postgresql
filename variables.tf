@@ -1,6 +1,6 @@
 variable "vpc_id" {
   description = "The ID of the VPC where the RDS will be deployed"
-  default     = "vpc-0072a7ae968006755"
+  default     = "vpc-04308bc5185e0f872"
 }
 
 variable "rds_subnet_ids" {

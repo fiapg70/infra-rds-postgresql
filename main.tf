@@ -36,6 +36,7 @@ provider "postgresql" {
   superuser       = false
   expected_version = aws_db_instance.rds-healthmed.engine_version
 }
+
 resource "aws_db_subnet_group" "rdssubnet" {
   name       = "rdssubnet"
   subnet_ids = ["subnet-03ef2390558a998a9", "subnet-018e6bd3ea3115b87"]

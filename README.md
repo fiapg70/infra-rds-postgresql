@@ -1,4 +1,4 @@
-# Terraform AWS RDS Postgres
+# Terraform AWS RDS Postgres - V1
 
 Este projeto cria uma infraestrutura para criart RDS com Posgres para ser usado em todos as API's da estrutura de microserviço
 

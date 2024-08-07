@@ -38,7 +38,7 @@ provider "postgresql" {
 }
 
 resource "aws_db_subnet_group" "rdssubnet" {
-  name       = "rdssubnet"
+  name       = "rdssubnetv1"
   subnet_ids = ["subnet-03ef2390558a998a9", "subnet-018e6bd3ea3115b87"]
   tags = {
     Name = "rdssubnet"
@@ -46,7 +46,7 @@ resource "aws_db_subnet_group" "rdssubnet" {
 }
 
 resource "aws_security_group" "rdssecurity" {
-  name        = "rdssecuritygroup"
+  name        = "rdssecuritygroupv1"
   description = "Example security group for RDS"
   vpc_id      = "vpc-04308bc5185e0f872"
 

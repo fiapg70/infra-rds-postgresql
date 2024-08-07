@@ -41,11 +41,11 @@ resource "aws_db_subnet_group" "rdssubnetv1" {
   name       = "rdssubnetv1"
   subnet_ids = ["subnet-03ef2390558a998a9", "subnet-018e6bd3ea3115b87"]
   tags = {
-    Name = "rdssubnet"
+    Name = "rdssubnetv1"
   }
 }
 
-resource "aws_security_group" "rdssecurity" {
+resource "aws_security_group" "rdssecurityv1" {
   name        = "rdssecuritygroupv1"
   description = "Example security group for RDS"
   vpc_id      = "vpc-04308bc5185e0f872"
@@ -78,8 +78,8 @@ resource "aws_db_instance" "rds-healthmed" {
   identifier           = local.postgres_identifier
   username             = local.postgres_db_username
   password             = local.postgres_user_password
-  db_subnet_group_name = aws_db_subnet_group.rdssubnet.name
-  vpc_security_group_ids = [aws_security_group.rdssecurity.id]
+  db_subnet_group_name = aws_db_subnet_group.rdssubnetv1.name
+  vpc_security_group_ids = [aws_security_group.rdssecurityv1.id]
   skip_final_snapshot  = true
   publicly_accessible  = true
   tags = {
